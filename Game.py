@@ -5,7 +5,7 @@ class Game:
         pass
 
     def __repr__(self):
-        pass
+        return ''
 
     def play(self,row,col):
         pass
