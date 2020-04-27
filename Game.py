@@ -1,3 +1,6 @@
+from itertools import product
+class GameError(Exception):
+    pass
 
 class Game:
     EMPTY = " "
@@ -10,26 +13,26 @@ class Game:
         self._player = Game.P1
 
     def __repr__(self):
-        #output = '''  '''
-        #output.join([str(j)+ '' for j in range(1,Game.DIM+1)])
-        #for i in range(Game.DIM):
-        #    output.join(str(i)+' ')
-          
-        return f'''  1 2 3
-1 {self._board[0][0]}|{self._board[0][1]}|{self._board[0][2]}
-  _____
-2 {self._board[1][0]}|{self._board[1][1]}|{self._board[1][2]}
-  _____
-3 {self._board[2][0]}|{self._board[2][1]}|{self._board[2][2]}
-'''
+        output = '''  '''
+        output += ''.join([str(j+1)+' ' for j in range(Game.DIM)]) + '\n'
+        for i in range(Game.DIM):
+            output += str(i+1) + ' ' + '|'.join([self._board[i][j] for j in range(Game.DIM)]) + '\n'
+        return output
 
 
-        
-        
 
     def play(self,row,col):
+        if not (0<row<=Game.DIM):
+            raise GameError(f'Row {row} out of range')
+        if not(0<col<=Game.DIM):
+            raise GameError(f'Column{col} out of range')
+        
         row -= 1
         col -=1
+        
+        if self._board[row][col]!= Game.EMPTY:
+            raise GameError(f'Board not empty in {row},{col}')
+        
         self._board[row][col] = self._player
         if self._player == Game.P1: self._player = Game.P2
         else: self._player = Game.P1
@@ -48,7 +51,21 @@ class Game:
                 return p
             if all(self._board[i][2-i] is p for i in range(Game.DIM)):
                 return p
-
+        #No winner
+        return None
+    
+    
+    
+    @property
+    def drawer(self):
+        if all(self._board[row][col] is not Game.EMPTY for (row,col) in product(range(Game.DIM),range(Game.DIM))):
+            return True
+        return None
+    
+    def at(self,row,col):
+        row-=1
+        col-=1
+        return self._board[row][col]
 if __name__ == "__main__":
     game = Game()
     print(game)
